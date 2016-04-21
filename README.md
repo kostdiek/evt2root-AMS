@@ -1,7 +1,7 @@
 # evt2root-AMS
 This is the evt2root files for the AMS group at UND, originally created by Karl Smith and edited by Karen Ostdiek.
 
-analysistoots.C was originally written by William Bauder, edited by Karen Ostdiek. Contains functions to draw histograms, cuts, and canvases.
+analysistools.C was originally written by William Bauder, edited by Karen Ostdiek. Contains functions to draw histograms, cuts, and canvases.
 
 cuts.C written by Karen Ostdiek. Contains a function to define and open a cut from a root file. Edit the names as you need.
 
