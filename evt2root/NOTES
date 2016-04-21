@@ -1,0 +1,73 @@
+Personal Notes from Karen Ostdiek
+
+When adding "new" scalers, dE signals, or position signals, etc:
+
+	:cd ExpEvent
+	// You  need to edit both eventData.cxx and eventData.h
+	In eventData.h, add your new parameters with their name under private part of the Class.
+	In eventData.cxx, add your paramenters and initalize as 0. Then you need to add them to the correct slot in the crate. Slot 12 is the TDC (L and R signals), Slot 14 is the ADC (dE signals), Slot 19 is the Scalers, and Slot 10 is the PUR signal. Set your new parameters in the correct slot and set equal to value.
+
+Once you've adding your new parameters (obviously save both of those files), then you'll need to update evt2root.
+	:cd .. 
+	//You should be in evt2root main directory
+	:module load git
+	:git pull
+	//It will ask for your username and password. Then will be print to screen:
+	remote: Counting objects: 7, done.
+	remote: Compressing objects: 100% (4/4), dome.
+	remote: Total 4 (delta 3), reused 0 (delta 0)
+	Unpacking objects: 100% (4/4), done.
+	From http://nslgit.phys.nd.edu/ksmith37/evt2root
+	   0e608e0..e770326 master    ->origin/master
+	Updating 0e608e..e770326
+	Fast-forward
+	 src/nsclEventBuffer.cxx | 34+++++++++++------------
+	1 file changed, 23 insertions (+), 11 deletions (-)
+
+Then you'll need to recompile the code. 
+	:cd build
+	:make install
+	//Then a whole bunch gets printed to the screen. 
+
+
+Actually converting files: In the build directory you will need to (before going into root) use evt2root command.
+	:evt2root [input.evt] [output.root]
+	Example :evt2rott 60Fe/2011/September/run375-4096.evt run375.root
+	For the input you need the path and the .evt file. The output file will save in the build directory. 
+
+In Root, after converting file:
+	.L libExpEvent.so
+	TFile *_file0=TFile::Open("filename.root")
+	evtTree->Draw( .........)
+
+Some examples for Drawing:
+	evtTree->Draw("RL", "dE3>2400 && dE3<2900") 
+		Will draw RL signal for dE3 is between 2400 and 2900
+	evtTree->Draw("dE3:Pos_X >> whatever", "", "COLZ")
+		: means to draw this vs that 
+		>> whatever, will define this histogram as "whatever"
+	evtTree->Draw("dE3:Pos_X>>h2"< "FeFull||NiFull", "COLZ")
+		|| means 'or' so it will draw FeFull cut or NiFull cut.
+
+
+Actually having some control on th drawing (i.e. having colors)
+	[] .L libExpEvent.so
+	[] new TBrowser
+	
+	//Navigate in the Browser to the run in question, find the evtTre folder. Right click on it. Click "StartViewer" from list. 
+	//In the TreeViewer, move parameters (branches) to the appropiate swiggle X and swiggle Y. Under Option, under 2D options, click Box/Color. Under File, click on New Canvas. Then click drawin teh TreeViewer (graph icon, lower left). 
+	//In the Canvas, click on graph. A second tab titled Binning should shown up to the right of the Style tab. Change # of Bins for X and Y and change Bin Offset for more colors.
+
+Now by code:
+	[] TH2F *h2 = new TH2F("h2", "karens hist", 4096, 0 , 4096, 4096, 0 , 4096)
+	[]TFile *_file0=TFile::Open("run#.root")
+	[]evtTree->Draw("dE3:Pos_X>>h2", "","COLZ")
+
+	// The second Option for Draw is the cut you want made. Leave empty for no cuts. 
+	//Should open up in h2 and you can change bin and bin offset as before here. 
+
+	[]my_cut->IntegralHist("histogram")
+		will give number of entries in cut called my_cut and on the histogram called "histogram"
+
+
+	
